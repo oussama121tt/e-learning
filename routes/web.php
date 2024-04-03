@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\admincontroller;
 use App\Http\Controllers\instructorcontroller;
 use App\Http\Controllers\userController;
+use App\Http\Controllers\Backend\CategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,18 +18,23 @@ use App\Http\Controllers\userController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+
+// Route::get('/', function () {
+//     return view('welcome');
+// });
+
+Route::get('/', [UserController::class, 'Index'])->name('index');
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return view('frontend.dashboard.index');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/user/profile', [UserController::class, 'UserProfile'])->name('user.profile');
+    Route::post('/user/profile/update', [UserController::class, 'UserProfileUpdate'])->name('user.profile.update');
+    Route::get('/user/logout', [UserController::class, 'UserLogout'])->name('user.logout');
+    Route::get('/user/change/password', [UserController::class, 'UserChangePassword'])->name('user.change.password');
+    Route::post('/user/password/update', [UserController::class, 'UserPasswordUpdate'])->name('user.password.update');
 });
 
 require __DIR__.'/auth.php';
@@ -42,6 +48,16 @@ Route::post('/admin/profile/store', [AdminController::class, 'AdminProfileStore'
 
 Route::get('/admin/change/password', [AdminController::class, 'AdminChangePassword'])->name('admin.change.password');
 Route::post('/admin/password/update', [AdminController::class, 'AdminPasswordUpdate'])->name('admin.password.update');
+
+
+// Category All Route
+Route::controller(CategoryController::class)->group(function(){
+    Route::get('/all/category','AllCategory')->name('all.category');
+    Route::get('/add/category','AddCategory')->name('add.category');
+    Route::post('/store/category','StoreCategory')->name('store.category');
+
+
+});
 });/// end admin groupe middlware
 Route::get('/Admin/login', [admincontroller::class, 'adminlogin'])->name('admin.login');
 /// instructor groupe middlware
